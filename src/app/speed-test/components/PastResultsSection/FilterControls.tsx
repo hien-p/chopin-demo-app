@@ -1,5 +1,11 @@
 "use client";
 
+import { Label } from '../../../../components/ui/label';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../../../components/ui/select';
+import { Input } from '../../../../components/ui/input';
+import { Checkbox } from '../../../../components/ui/checkbox';
+import { Button } from '../../../../components/ui/button';
+
 interface FilterControlsProps {
   filterMode: 'location' | 'radius';
   setFilterMode: (mode: 'location' | 'radius') => void;
@@ -25,61 +31,65 @@ export default function FilterControls({
   showMyResults,
   setShowMyResults,
   handleFilterChange,
-  isFetchingPastResults
+  isFetchingPastResults,
 }: FilterControlsProps) {
   return (
-    <div className="filter-controls-container">
-      <div className="filter-group">
-        <p className="filter-group-label">Filter by:</p>
-        <select
+    <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
+      <div className="flex items-center gap-2">
+        <Label className="font-semibold">Filter by:</Label>
+        <Select
           value={filterMode}
-          onChange={(e) => setFilterMode(e.target.value as 'location' | 'radius')}
-          className="select-field"
+          onValueChange={(v: 'location' | 'radius') => setFilterMode(v)}
         >
-          <option value="location">Name</option>
-          <option value="radius">Radius</option>
-        </select>
+          <SelectTrigger className="w-36">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="location">Name</SelectItem>
+            <SelectItem value="radius">Radius</SelectItem>
+          </SelectContent>
+        </Select>
 
         {filterMode === 'location' ? (
-          <input
-            type="text"
+          <Input
             placeholder="e.g., Brazil"
             value={filterLocation}
             onChange={(e) => setFilterLocation(e.target.value)}
-            className="input-field location-input"
+            className="w-48"
           />
         ) : (
-          <select
-            value={radius}
-            onChange={(e) => setRadius(Number(e.target.value))}
-            className="select-field"
+          <Select
+            value={String(radius)}
+            onValueChange={(v) => setRadius(Number(v))}
             disabled={!coordinates}
           >
-            <option value={5}>5 km</option>
-            <option value={25}>25 km</option>
-            <option value={100}>100 km</option>
-            <option value={500}>500 km</option>
-          </select>
+            <SelectTrigger className="w-36">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="5">5 km</SelectItem>
+              <SelectItem value="25">25 km</SelectItem>
+              <SelectItem value="100">100 km</SelectItem>
+              <SelectItem value="500">500 km</SelectItem>
+            </SelectContent>
+          </Select>
         )}
       </div>
 
-      <label className="checkbox-label">
-        <input
-          type="checkbox"
+      <label className="inline-flex items-center gap-2 cursor-pointer">
+        <Checkbox
           checked={showMyResults}
-          onChange={(e) => setShowMyResults(e.target.checked)}
-          className="checkbox"
+          onCheckedChange={(checked) => setShowMyResults(Boolean(checked))}
         />
-        <span className="checkbox-text">My Results</span>
+        <span className="text-foreground">My Results</span>
       </label>
 
-      <button
+      <Button
         onClick={handleFilterChange}
-        className="btn search-button"
         disabled={isFetchingPastResults || (filterMode === 'radius' && !coordinates)}
       >
         {isFetchingPastResults ? 'Searching...' : 'Search'}
-      </button>
+      </Button>
     </div>
   );
-} 
+}

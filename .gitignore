@@ -44,3 +44,9 @@ next-env.d.ts
 certificates
 openspeedtest-source
 .cursor
+
+# Build output
+/dist/
+
+# Database files
+/src/lib/seed.db*

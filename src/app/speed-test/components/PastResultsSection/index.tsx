@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../../components/ui/tabs';
 import FilterControls from './FilterControls';
 import PastResultsTable from './PastResultsTable';
+import LocationChart from './LocationChart';
 import { PastSpeedTestResult } from '../../lib/types';
 
 interface PastResultsSectionProps {
@@ -18,6 +20,7 @@ export default function PastResultsSection({ coordinates }: PastResultsSectionPr
     const [pagination, setPagination] = useState({ page: 1, pageSize: 10, totalPages: 1, totalResults: 0 });
     const [filterMode, setFilterMode] = useState<'location' | 'radius'>('location');
     const [radius, setRadius] = useState<number>(10);
+    const [view, setView] = useState<'table' | 'chart'>('table');
 
     const fetchPastResults = useCallback(async (page = 1) => {
         setIsFetchingPastResults(true);
@@ -79,9 +82,17 @@ export default function PastResultsSection({ coordinates }: PastResultsSectionPr
     };
 
     return (
-        <div className="past-results-section">
-            <h2 className="past-results-title">Past Results</h2>
-            <div className="card">
+        <div className="mt-8">
+            <div className="mb-4">
+              <h2 className="text-xl font-bold mb-4">Past Results</h2>
+              <Tabs value={view} onValueChange={(v) => setView(v as 'table' | 'chart')}>
+                <TabsList>
+                  <TabsTrigger value="table">Table</TabsTrigger>
+                  <TabsTrigger value="chart">Chart</TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
+            <div className="p-4 border rounded-lg bg-card">
                 <FilterControls
                     filterMode={filterMode}
                     setFilterMode={setFilterMode}
@@ -98,28 +109,37 @@ export default function PastResultsSection({ coordinates }: PastResultsSectionPr
             </div>
             
             {error && (
-                <div className="past-results-error">
+                <div className="p-4 border border-red-200 rounded-lg bg-red-50 text-red-700">
                     {`Error: ${error}`}
                 </div>
             )}
 
             {isFetchingPastResults && (
-                <div className="past-results-loading">
+                <div className="p-4 text-center">
                     <p>Loading past results...</p>
                 </div>
             )}
 
             {pastResults.length > 0 && (
-                <PastResultsTable
+              <Tabs value={view} onValueChange={(v) => setView(v as 'table' | 'chart')}>
+                <TabsContent value="table">
+                  <PastResultsTable
                     pastResults={pastResults}
                     pagination={pagination}
                     fetchPastResults={fetchPastResults}
                     isFetchingPastResults={isFetchingPastResults}
-                />
+                  />
+                </TabsContent>
+                <TabsContent value="chart">
+                  <div className="p-4 border rounded-lg bg-card">
+                    <LocationChart pastResults={pastResults} isLoading={isFetchingPastResults} />
+                  </div>
+                </TabsContent>
+              </Tabs>
             )}
 
             {pastResults.length === 0 && !isFetchingPastResults && !error && (
-                <div className="past-results-empty">
+                <div className="p-4 text-center text-muted-foreground">
                     <p>No past results found for the current filters.</p>
                 </div>
             )}

@@ -1,6 +1,8 @@
 "use client";
 
 import { PastSpeedTestResult } from '../../lib/types';
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '../../../../components/ui/table';
+import { Button } from '../../../../components/ui/button';
 
 interface PastResultsTableProps {
   pastResults: PastSpeedTestResult[];
@@ -21,48 +23,50 @@ export default function PastResultsTable({
   isFetchingPastResults
 }: PastResultsTableProps) {
   return (
-    <div className="table-container">
-      <table className="results-table">
-        <thead>
-          <tr>
-            <th>Timestamp</th>
-            <th>Location</th>
-            <th>Download (Mbps)</th>
-            <th>Upload (Mbps)</th>
-            <th>Ping (ms)</th>
-          </tr>
-        </thead>
-        <tbody>
+    <div className="w-full">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Timestamp</TableHead>
+            <TableHead>Location</TableHead>
+            <TableHead className="text-right">Download (Mbps)</TableHead>
+            <TableHead className="text-right">Upload (Mbps)</TableHead>
+            <TableHead className="text-right">Ping (ms)</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {pastResults.map((result) => (
-            <tr key={result.id}>
-              <td>{new Date(result.timestamp).toLocaleString()}</td>
-              <td>{result.location}</td>
-              <td>{result.download_speed.toFixed(2)}</td>
-              <td>{result.upload_speed.toFixed(2)}</td>
-              <td>{result.ping.toFixed(1)}</td>
-            </tr>
+            <TableRow key={result.id}>
+              <TableCell>{new Date(result.timestamp).toLocaleString()}</TableCell>
+              <TableCell>{result.location}</TableCell>
+              <TableCell className="text-right">{result.download_speed.toFixed(2)}</TableCell>
+              <TableCell className="text-right">{result.upload_speed.toFixed(2)}</TableCell>
+              <TableCell className="text-right">{result.ping.toFixed(1)}</TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
-      <div className="pagination-controls">
-        <button
-          onClick={() => fetchPastResults(pagination.page - 1)}
-          disabled={pagination.page <= 1 || isFetchingPastResults}
-          className="btn"
-        >
-          Previous
-        </button>
-        <span>
-          Page {pagination.page} of {pagination.totalPages}
-        </span>
-        <button
-          onClick={() => fetchPastResults(pagination.page + 1)}
-          disabled={pagination.page >= pagination.totalPages || isFetchingPastResults}
-          className="btn"
-        >
-          Next
-        </button>
-      </div>
+        </TableBody>
+        <TableCaption>
+          <div className="flex items-center justify-between">
+            <Button
+              variant="secondary"
+              onClick={() => fetchPastResults(pagination.page - 1)}
+              disabled={pagination.page <= 1 || isFetchingPastResults}
+            >
+              Previous
+            </Button>
+            <span>
+              Page {pagination.page} of {pagination.totalPages}
+            </span>
+            <Button
+              variant="secondary"
+              onClick={() => fetchPastResults(pagination.page + 1)}
+              disabled={pagination.page >= pagination.totalPages || isFetchingPastResults}
+            >
+              Next
+            </Button>
+          </div>
+        </TableCaption>
+      </Table>
     </div>
   );
 } 
